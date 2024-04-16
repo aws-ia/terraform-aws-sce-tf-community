@@ -1,0 +1,101 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Resource": "arn:${data_aws_partition_current_partition}:logs:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:log-group:/aws/codebuild/aws-sce*",
+      "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeDhcpOptions",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeVpcs"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:CreateNetworkInterfacePermission"
+      ],
+      "Resource": [
+        "arn:${data_aws_partition_current_partition}:ec2:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:network-interface/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:DescribeKey",
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "${aws_kms_alias_sce_target_key_arn}"
+    },
+    {
+        "Action": [
+            "sts:AssumeRole"
+        ],
+        "Resource": "arn:aws:iam::*:role/*",
+        "Effect": "Allow"
+    },
+    {
+        "Action": [
+            "sts:GetCallerIdentity"
+        ],
+        "Resource": "*",
+        "Effect": "Allow"
+    },
+      {
+        "Action": [
+            "s3:ListBucket"
+        ],
+        "Resource": [
+            "${aws_s3_bucket_sce_terraform_state_arn}"
+        ],
+        "Effect": "Allow"
+    },
+    {
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject"
+        ],
+        "Resource": [
+            "${aws_s3_bucket_sce_terraform_state_arn}/*"
+        ],
+        "Effect": "Allow"
+    },
+    {
+        "Action": [
+            "s3:GetObject",
+            "s3:PutObject"
+        ],
+        "Resource": [
+            "${aws_s3_bucket_sce_logging_arn}/*"
+        ],
+        "Effect": "Allow"
+    },
+		{
+			"Effect": "Allow",
+			"Action": [
+				"servicecatalog:NotifyUpdateProvisionedProductEngineWorkflowResult",
+				"servicecatalog:NotifyTerminateProvisionedProductEngineWorkflowResult",
+				"servicecatalog:NotifyProvisionProductEngineWorkflowResult"
+			],
+			"Resource": "*"
+		},
+		{
+			"Effect": "Allow",
+			"Action": "ssm:GetParameter",
+			"Resource": "arn:${data_aws_partition_current_partition}:ssm:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:parameter/${ssm_parameter_name}"
+		}
+  ]
+}

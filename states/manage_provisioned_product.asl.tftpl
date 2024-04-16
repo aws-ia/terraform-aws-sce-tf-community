@@ -1,0 +1,574 @@
+{
+  "Comment": "A state machine manages the Terraform Provisioning experience.",
+  "StartAt": "Generate Tracer Tag",
+  "States": {
+    "Generate Tracer Tag": {
+      "Type": "Pass",
+      "Comment": "Adds a tag to be passed to Terraform default-tags which traces the AWS resources created by it",
+      "Parameters": {
+        "key": "SERVICE_CATALOG_TERRAFORM_INTEGRATION-DO_NOT_DELETE",
+        "value.$": "$.provisionedProductId"
+      },
+      "ResultPath": "$.tracerTag",
+      "Next": "Choice State"
+    },
+    "Choice State": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "PROVISION_PRODUCT"
+            }
+          ],
+          "Next": "Provision"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "UPDATE_PROVISIONED_PRODUCT"
+            }
+          ],
+          "Next": "Update"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "TERMINATE_PROVISIONED_PRODUCT"
+            }
+          ],
+          "Next": "Terminate"
+        }
+      ],
+      "Default": "Failed"
+    },
+    "Terminate": {
+      "Type": "Task",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
+      "Parameters": {
+        "ProjectName": "${aws_codebuild_project_sce_runner_name}",
+        "EnvironmentVariablesOverride": [
+          {
+            "Name": "SCE_WORKFLOW_TOKEN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.token"
+          },
+          {
+            "Name": "SCE_OPERATION",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.operation"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductId"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_NAME",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductName"
+          },
+          {
+            "Name": "SCE_RECORD_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.recordId"
+          },
+          {
+            "Name": "SCE_LAUNCH_ROLE_ARN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.launchRoleArn"
+          },
+          {
+            "Name": "SCE_AWS_PRINCIPAL",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.principal"
+          },
+          {
+            "Name": "SCE_AWS_ACCOUNT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.awsAccountId"
+          },
+          {
+            "Name": "SCE_TRACER_TAG",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.tracerTag)"
+          }
+        ]
+      },
+      "ResultPath": "$.taskresult",
+      "Next": "Build passed?",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify codebuild task failure",
+          "ResultPath": "$.error"
+        }
+      ]      
+    },
+    "Provision": {
+      "Type": "Task",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
+      "Parameters": {
+        "ProjectName": "${aws_codebuild_project_sce_runner_name}",
+        "EnvironmentVariablesOverride": [
+          {
+            "Name": "SCE_WORKFLOW_TOKEN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.token"
+          },
+          {
+            "Name": "SCE_OPERATION",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.operation"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductId"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_NAME",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductName"
+          },
+          {
+            "Name": "SCE_PRODUCT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.productId"
+          },
+          {
+            "Name": "SCE_PROVISIONING_ARTIFACT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisioningArtifactId"
+          },
+          {
+            "Name": "SCE_RECORD_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.recordId"
+          },
+          {
+            "Name": "SCE_LAUNCH_ROLE_ARN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.launchRoleArn"
+          },
+          {
+            "Name": "SCE_ARTIFACT_PATH",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.artifact.path"
+          },
+          {
+            "Name": "SCE_ARTIFACT_TYPE",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.artifact.type"
+          },
+          {
+            "Name": "SCE_AWS_PRINCIPAL",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.principal"
+          },
+          {
+            "Name": "SCE_AWS_ACCOUNT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.awsAccountId"
+          },
+          {
+            "Name": "SCE_PARAMETERS",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.parameters)"
+          },
+          {
+            "Name": "SCE_TAGS",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.tags)"
+          },
+          {
+            "Name": "SCE_TRACER_TAG",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.tracerTag)"
+          }
+        ]
+      },
+      "ResultPath": "$.taskresult",
+      "Next": "Build passed?",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify codebuild task failure",
+          "ResultPath": "$.error"
+        }
+      ]      
+    },
+    "Update": {
+      "Type": "Task",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
+      "Parameters": {
+        "ProjectName": "${aws_codebuild_project_sce_runner_name}",
+        "EnvironmentVariablesOverride": [
+          {
+            "Name": "SCE_WORKFLOW_TOKEN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.token"
+          },
+          {
+            "Name": "SCE_OPERATION",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.operation"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductId"
+          },
+          {
+            "Name": "SCE_PROVISIONED_PRODUCT_NAME",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisionedProductName"
+          },
+          {
+            "Name": "SCE_PRODUCT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.productId"
+          },
+          {
+            "Name": "SCE_PROVISIONING_ARTIFACT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.provisioningArtifactId"
+          },
+          {
+            "Name": "SCE_RECORD_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.recordId"
+          },
+          {
+            "Name": "SCE_LAUNCH_ROLE_ARN",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.launchRoleArn"
+          },
+          {
+            "Name": "SCE_ARTIFACT_PATH",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.artifact.path"
+          },
+          {
+            "Name": "SCE_ARTIFACT_TYPE",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.artifact.type"
+          },
+          {
+            "Name": "SCE_AWS_PRINCIPAL",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.principal"
+          },
+          {
+            "Name": "SCE_AWS_ACCOUNT_ID",
+            "Type": "PLAINTEXT",
+            "Value.$": "$.identity.awsAccountId"
+          },
+          {
+            "Name": "SCE_PARAMETERS",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.parameters)"
+          },
+          {
+            "Name": "SCE_TAGS",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.tags)"
+          },
+          {
+            "Name": "SCE_TRACER_TAG",
+            "Type": "PLAINTEXT",
+            "Value.$": "States.JsonToString($.tracerTag)"
+          }
+        ]
+      },
+      "ResultPath": "$.taskresult",
+      "Next": "Build passed?",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Notify codebuild task failure",
+          "ResultPath": "$.error"
+        }
+      ]
+    },  
+    "Build passed?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.taskresult.Build.BuildStatus",
+          "StringEquals": "SUCCEEDED",
+          "Next": "service catalog operation?"
+        }
+      ],
+      "Default": "Notify codebuild task failure"
+    },
+    "service catalog operation?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "PROVISION_PRODUCT"
+            }
+          ],
+          "Next": "Notify codebuild task success and Get state file outputs"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "UPDATE_PROVISIONED_PRODUCT"
+            }
+          ],
+          "Next": "Notify codebuild task success and Get state file outputs"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.operation",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.operation",
+              "StringEquals": "TERMINATE_PROVISIONED_PRODUCT"
+            }
+          ],
+          "Next": "Notify terminate success result"
+        }
+      ],
+      "Default": "Failed"
+    },
+    "Notify codebuild task success and Get state file outputs": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "Notify codebuild task success",
+          "States": {
+            "Notify codebuild task success": {
+              "Type": "Task",
+              "Resource": "arn:${data_aws_partition_current_partition}:states:::sns:publish",
+              "Parameters": {
+                "Message": "CodeBuild build job succeeded",
+                "TopicArn": "${aws_sns_topic_codebuild_result_notify_arn}"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Get state file outputs",
+          "States": {
+            "Get state file outputs": {
+              "Type": "Task",
+              "Comment": "Fetches state file from S3 state bucket and parses outputs from the state file into record outputs",
+              "Resource": "arn:${data_aws_partition_current_partition}:states:::lambda:invoke",
+              "Parameters": {
+                "FunctionName": "${aws_lambda_function_sce_get_state_file_outputs_arn}",
+                "Payload": {
+                  "awsAccountId.$": "$.identity.awsAccountId",
+                  "provisionedProductId.$": "$.provisionedProductId",
+                  "provisionedProductName.$": "$.provisionedProductName",
+                  "recordId.$": "$.recordId"
+                },
+                "InvocationType": "RequestResponse"
+              },
+              "ResultSelector": {
+                "recordOutputs.$": "$.Payload.recordOutputs",
+                "lambdaExecutionRequestId.$": "$.SdkHttpMetadata.HttpHeaders.x-amzn-RequestId",
+                "xRayTraceId.$": "$.SdkHttpMetadata.HttpHeaders.X-Amzn-Trace-Id",
+                "httpStatusCode.$": "$.SdkHttpMetadata.HttpStatusCode"
+              },
+              "ResultPath": "$.getStateFileOutputsResponse",
+              "Retry": [
+                {
+                  "ErrorEquals": [
+                    "Lambda.ServiceException",
+                    "Lambda.AWSLambdaException",
+                    "Lambda.SdkClientException"
+                  ],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 6,
+                  "BackoffRate": 2
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": [
+                    "States.TaskFailed"
+                  ],
+                  "ResultPath": "$.errorInfo",
+                  "Next": "ReservedTypeRetreat"
+                },
+                {
+                  "ErrorEquals": [
+                    "States.Timeout"
+                  ],
+                  "ResultPath": "$.errorInfo",
+                  "Next": "TimeoutRetreat"
+                },
+                {
+                  "ErrorEquals": [
+                    "States.ALL"
+                  ],
+                  "Next": "CatchAllRetreat"
+                }
+              ],
+              "TimeoutSeconds": 300,
+              "End": true
+            },
+            "ReservedTypeRetreat": {
+              "Type": "Pass",
+              "Result": "This is a fallback from a reserved error code",
+              "End": true
+            },
+            "TimeoutRetreat": {
+              "Type": "Pass",
+              "Result": "This is a fallback from a custom Lambda function timeout error",
+              "End": true
+            },
+            "CatchAllRetreat": {
+              "Type": "Pass",
+              "Result": "This is a fallback from any error code",
+              "End": true
+            }
+          }
+        }
+      ],
+      "Next": "Notify provision update engine workflow success result"
+    },
+    "Notify provision update engine workflow success result": {
+      "Type": "Task",
+      "Comment": "Sends back success results of Terraform updating to Service Catalog",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${aws_lambda_function_sce_notify_provision_update_result_arn}",
+        "Payload": {
+          "token.$": "$[1].token",
+          "operation.$": "$[1].operation",
+          "awsAccountId.$": "$[1].identity.awsAccountId",
+          "provisionedProductId.$": "$[1].provisionedProductId",
+          "provisionedProductName.$": "$[1].provisionedProductName",
+          "recordId.$": "$[1].recordId",
+          "outputs.$": "$[1].getStateFileOutputsResponse.recordOutputs",
+          "tracerTag.$": "$[1].tracerTag"
+        },
+        "InvocationType": "RequestResponse"
+      },
+      "ResultSelector": {
+        "lambdaExecutionRequestId.$": "$.SdkHttpMetadata.HttpHeaders.x-amzn-RequestId",
+        "xRayTraceId.$": "$.SdkHttpMetadata.HttpHeaders.X-Amzn-Trace-Id",
+        "httpStatusCode.$": "$.SdkHttpMetadata.HttpStatusCode"
+      },
+      "ResultPath": "$[1].notifyUpdateResultResponse",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.TaskFailed"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "ReservedTypeFallback"
+        },
+        {
+          "ErrorEquals": [
+            "States.Timeout"
+          ],
+          "ResultPath": "$.errorInfo",
+          "Next": "TimeoutFallback"
+        },
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "CatchAllFallback"
+        }
+      ],
+      "TimeoutSeconds": 300,
+      "Next": "Succeeded"
+    },
+    "ReservedTypeFallback": {
+      "Type": "Pass",
+      "Result": "This is a fallback from a reserved error code",
+      "End": true
+    },
+    "TimeoutFallback": {
+      "Type": "Pass",
+      "Result": "This is a fallback from a custom Lambda function timeout error",
+      "End": true
+    },
+    "CatchAllFallback": {
+      "Type": "Pass",
+      "Result": "This is a fallback from any error code",
+      "End": true
+    },
+    "Notify terminate success result": {
+      "Type": "Task",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::sns:publish",
+      "Parameters": {
+        "Message": "CodeBuild job to terminate provisioned product and the notification to service catalog succeeded",
+        "TopicArn": "${aws_sns_topic_codebuild_result_notify_arn}"
+      },
+      "Next": "Succeeded"
+    },
+    "Notify codebuild task failure": {
+      "Type": "Task",
+      "Resource": "arn:${data_aws_partition_current_partition}:states:::sns:publish",
+      "Parameters": {
+        "Message": "CodeBuild build job failed",
+        "TopicArn": "${aws_sns_topic_codebuild_result_notify_arn}"
+      },
+      "Next": "CodeBuild task failed"
+    },
+    "CodeBuild task failed": {
+      "Type": "Fail"
+    },
+    "Succeeded": {
+      "Type": "Succeed"
+    },
+    "Failed": {
+      "Type": "Fail",
+      "Cause": "Provided Operation type was not of type : UPDATE_PROVISIONED_PRODUCT, PROVISION_PRODUCT, or TERMINATE_PROVISIONED_PRODUCT"
+    }
+  }
+}

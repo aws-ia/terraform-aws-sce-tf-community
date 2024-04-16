@@ -1,0 +1,23 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Allow PutObject",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": [
+                    "logging.s3.amazonaws.com"
+                ]
+            },
+            "Action": "s3:PutObject",
+            "Resource": [
+                "${aws_s3_bucket_sce_logging_bucket_arn}/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "aws:SourceAccount": "${data_aws_caller_identity_current_account_id}"
+                }
+            }
+        }
+    ]
+}

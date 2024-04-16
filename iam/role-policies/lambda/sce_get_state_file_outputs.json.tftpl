@@ -1,0 +1,46 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "kms:DescribeKey",
+                "kms:Decrypt",
+                "kms:ReEncrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": [
+                "${aws_kms_alias_sce_target_key_arn}"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "servicecatalog:NotifyProvisionProductEngineWorkflowResult",
+                "servicecatalog:NotifyUpdateProvisionedProductEngineWorkflowResult"
+            ],
+            "Resource": [
+                "arn:${data_aws_partition_current_partition}:servicecatalog:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:*/*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": "${aws_s3_bucket_sce_terraform_state_arn}/*",
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+            ],
+            "Resource": [
+                "*"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
