@@ -3,5 +3,5 @@
 
 # Out of the box deployment (no VPC, notifications, etc.)
 module "sce_tf" {
-  source = "git::ssh://git@ssh.gitlab.aws.dev/albsilv/terraform-aws-sce-tf-community.git?ref=develop"
+  source = "../.."
 }
