@@ -1,0 +1,31 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+header:
+  license:
+    spdx-id: Apache-2.0
+    copyright-owner: Amazon.com, Inc. or its affiliates
+    content: | # `license` will be used as the content when `fix` command needs to insert a license header.
+      Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+      SPDX-License-Identifier: Apache-2.0
+
+  paths:
+    - '**'
+
+  paths-ignore:
+    - '.*' # ignore hidden files in root dir
+    - '**/*.json' # ignore uncommentable JSON
+    - '**/*.tftpl'
+    - 'src/*/*.ini'
+    - 'src/*/*.lock'
+    - 'src/*/*.toml'
+    - 'build_artifacts'
+    - '**/*.md'
+    - '**/*.egg-info/*'
+    - 'LICENSE'
+    - 'NOTICE'
+    - 'CODEOWNERS'
+
+  comment: never
+  license-location-threshold: 80
+
