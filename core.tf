@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 module "core" {
-  source = "git::ssh://git@ssh.gitlab.aws.dev/albsilv/terraform-aws-sce-core.git?ref=develop"
+  source = "git@github.com:aws-ia/terraform-aws-sce-core.git?ref=main"
 
   cloudwatch_log_group_retention = var.cloudwatch_log_group_retention
 
