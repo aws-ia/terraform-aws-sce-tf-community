@@ -105,6 +105,7 @@ This modules deploys the core components needed to support Terraform Community E
 | <a name="input_create_ssh_key_ssm_parameter"></a> [create\_ssh\_key\_ssm\_parameter](#input\_create\_ssh\_key\_ssm\_parameter) | Boolean flag indicating whether an SSM parameter will be created for an SSH key. If created, it will be defaulted to a value of REPLACE\_ME and will need to be updated outside of this module. | `bool` | `false` | no |
 | <a name="input_label_id_order"></a> [label\_id\_order](#input\_label\_id\_order) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `list(string)` | <pre>[<br>  "name",<br>  "namespace",<br>  "stage"<br>]</pre> | no |
 | <a name="input_s3_access_logging_expiration_days"></a> [s3\_access\_logging\_expiration\_days](#input\_s3\_access\_logging\_expiration\_days) | The amount of days to retain logs in the S3 logs bucket | `string` | `"365"` | no |
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Set to true if you want to force delete S3 bucket created by this module (including contents of the bucket) | `bool` | `false` | no |
 | <a name="input_sfn_log_level"></a> [sfn\_log\_level](#input\_sfn\_log\_level) | Defines which category of execution history events are logged. Valid values: ALL, ERROR, FATAL, OFF | `string` | `"ALL"` | no |
 | <a name="input_sns_topic_email_addresses"></a> [sns\_topic\_email\_addresses](#input\_sns\_topic\_email\_addresses) | The email address to notify about the AWS CodeBuild success or failure | `list(string)` | `[]` | no |
 | <a name="input_ssh_key_ssm_parameter_path"></a> [ssh\_key\_ssm\_parameter\_path](#input\_ssh\_key\_ssm\_parameter\_path) | The SSM parameter path containing a private SSH key for cloning modules from private Git repositories. | `string` | `"/sce/tf/ssh-key"` | no |
@@ -120,5 +121,5 @@ This modules deploys the core components needed to support Terraform Community E
 | Name | Description |
 |------|-------------|
 | <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | n/a |
-| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | n/a |
+| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | TODO: make this clear what this role is about |
 <!-- END_TF_DOCS -->

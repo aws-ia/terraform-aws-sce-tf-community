@@ -43,3 +43,4 @@ go.sum
 
 # Terraform tests 
 tests/*.auto.tfvars
+*ssh_key

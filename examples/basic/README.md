@@ -23,7 +23,9 @@ No resources.
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Set to true if you want to force delete S3 bucket created by this module (including contents of the bucket) | `bool` | `false` | no |
 
 ## Outputs
 

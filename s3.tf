@@ -6,8 +6,9 @@
 ############################################################################################################
 
 resource "aws_s3_bucket" "sce_terraform_state" {
-  bucket = local.s3.sce_terraform_state.bucket
-  tags   = var.tags
+  bucket        = local.s3.sce_terraform_state.bucket
+  force_destroy = var.s3_force_destroy
+  tags          = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "sce_terraform_state" {
@@ -51,8 +52,9 @@ resource "aws_s3_bucket_logging" "sce_terraform_state" {
 ############################################################################################################
 
 resource "aws_s3_bucket" "sce_logging" {
-  bucket = local.s3.sce_logging.bucket
-  tags   = var.tags
+  bucket        = local.s3.sce_logging.bucket
+  force_destroy = var.s3_force_destroy
+  tags          = var.tags
 }
 
 resource "aws_s3_bucket_versioning" "sce_logging" {
@@ -96,8 +98,9 @@ resource "aws_s3_bucket_logging" "sce_logging" {
 ############################################################################################################
 
 resource "aws_s3_bucket" "sce_access_logs" {
-  bucket = local.s3.sce_access_logs.bucket
-  tags   = var.tags
+  bucket        = local.s3.sce_access_logs.bucket
+  force_destroy = var.s3_force_destroy
+  tags          = var.tags
 }
 
 resource "aws_s3_bucket_policy" "sce_access_logs" {

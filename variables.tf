@@ -59,6 +59,12 @@ variable "s3_access_logging_expiration_days" {
   default     = "365"
 }
 
+variable "s3_force_destroy" {
+  description = "Set to true if you want to force delete S3 bucket created by this module (including contents of the bucket)"
+  type        = bool
+  default     = false
+}
+
 #########################################
 # SFN Variables
 #########################################
