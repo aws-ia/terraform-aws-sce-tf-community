@@ -9,6 +9,9 @@ skip-check:
 - CKV_AZURE*
 - CKV2_AZURE*
 - CKV_TF_1 # default to Terraform registry instead of Git
+- CKV2_AWS_62 # bucket notification not required
+- CKV2_AWS_61 # bucket lifecycle is not required
+- CKV_AWS_144 # bucket cross region replication is not required
 summary-position: bottom
 output: 'cli'
 compact: True
