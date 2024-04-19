@@ -97,7 +97,9 @@ resource "aws_s3_bucket_logging" "sce_logging" {
 # sce_access_logs
 ############################################################################################################
 
-resource "aws_s3_bucket" "sce_access_logs" {
+#tfsec:ignore:aws-s3-enable-bucket-logging
+resource "aws_s3_bucket" "sce_access_logs" {  
+  #checkov:skip=CKV_AWS_145: encryption already enabled
   bucket        = local.s3.sce_access_logs.bucket
   force_destroy = var.s3_force_destroy
   tags          = var.tags
@@ -123,6 +125,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sce_access_logs" 
 
   rule {
     apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_alias.tfc.target_key_arn
       sse_algorithm = local.s3.sce_access_logs.sse_algorithm
     }
   }

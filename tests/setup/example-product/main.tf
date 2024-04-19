@@ -34,6 +34,12 @@ locals {
 # THE PROVISIONING ARTIFACT (TERRAFORM CONFIGURATION FILES)
 
 resource "aws_s3_bucket" "artifact_bucket" {
+  #checkov:skip=CKV2_AWS_6: skip block public access for the test
+  #checkov:skip=CKV_AWS_144: skip replication for the test
+  #checkov:skip=CKV_AWS_145: skip encryption for the test
+  #checkov:skip=CKV_AWS_21: skip versioning for the test
+  #checkov:skip=CKV_AWS_18: skip logging for the test
+  #checkov:skip=CKV2_AWS_61: skip lifecycle for the test
   bucket        = "service-catalog-example-product-${random_string.random.result}"
   force_destroy = true
 }
@@ -158,6 +164,8 @@ resource "aws_iam_role_policy" "example_product_launch_constraint_policy" {
 }
 
 data "aws_iam_policy_document" "example_product_launch_constraint_policy" {
+  #checkov:skip=CKV_AWS_356: select action require (*)
+  #checkov:skip=CKV_AWS_111
   version = "2012-10-17"
 
   statement {

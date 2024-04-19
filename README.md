@@ -120,6 +120,6 @@ This modules deploys the core components needed to support Terraform Community E
 
 | Name | Description |
 |------|-------------|
-| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | n/a |
-| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | TODO: make this clear what this role is about |
+| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | Parameter parser Lambda function IAM role ARN. You need to allow this role to assume the portfolio launch role |
+| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | CodeBuild IAM role ARN. You need to allow this role to assume the portfolio launch role |
 <!-- END_TF_DOCS -->
