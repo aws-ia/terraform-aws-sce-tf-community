@@ -99,7 +99,7 @@ resource "aws_s3_bucket_logging" "sce_logging" {
 
 #tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "sce_access_logs" {  
-  #checkov:skip=CKV_AWS_145: encryption already enabled
+  #checkov:skip=CKV_AWS_145: s3 access log uses SSE-S3
   bucket        = local.s3.sce_access_logs.bucket
   force_destroy = var.s3_force_destroy
   tags          = var.tags

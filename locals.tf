@@ -96,7 +96,7 @@ locals {
     }
     sce_access_logs = {
       bucket                          = substr("${module.label.id}-${data.aws_caller_identity.current.account_id}-access-logs", 0, 62)
-      sse_algorithm                   = "aws:kms"
+      sse_algorithm                   = "AES256"
       versioning_configuration_status = "Enabled"
     }
   }
