@@ -62,7 +62,7 @@ def download_artifact(launch_role_arn, artifact_path, workspace_dir):
 
     try:
         with tarfile.open(LOCAL_ARTIFACT_FILE) as file_handle:
-            file_handle.extractall(workspace_dir)
+            file_handle.extractall(path=workspace_dir, filter="data")
     except Exception as e:
         raise RuntimeError(f"Could not extract files from {artifact_path}: {e}")
 
