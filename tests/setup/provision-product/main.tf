@@ -1,7 +1,7 @@
 resource "aws_servicecatalog_provisioned_product" "example" {
-  name                        = "example"
-  product_id                  = var.sample_product_id
-  provisioning_artifact_name  = "v1"
+  name                       = "example"
+  product_id                 = var.sample_product_id
+  provisioning_artifact_name = "v1"
 
   dynamic "provisioning_parameters" {
     for_each = var.trigger_update ? [1] : [0]

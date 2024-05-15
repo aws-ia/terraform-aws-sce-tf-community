@@ -4,7 +4,7 @@
 # Deploys the solution in a user-provided VPC
 
 module "sce_tf" {
-  source = "git::ssh://git@ssh.gitlab.aws.dev/albsilv/terraform-aws-sce-tf-community.git?ref=develop"
+  source = "../.."
 
   vpc_id                 = "vpc-xxxxxx"
   vpc_private_subnet_ids = ["subnet-xxxxxx", "subnet-yyyyyy"]

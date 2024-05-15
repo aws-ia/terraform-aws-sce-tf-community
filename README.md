@@ -1,3 +1,31 @@
+# Terraform Service Catalog Engine - Terraform Community
+
+The AWS Service Catalog Terraform Community Engine (TCE) provides an example for you to configure and install a Terraform engine in your AWS Service Catalog administrator account. The TCE deploys the core components needed to support Terraform Community Edition as an `EXTERNAL` AWS Service Catalog provisioning engine. With the engine installed into your account, you can use AWS Service Catalog as a single tool to organize, govern, and distribute your Terraform configurations within AWS. For more information about Terraform and AWS Service Catalog, see [Getting started with Terraform.](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/getstarted-Terraform.html)
+
+AWS Service Catalog Engine Core will need to be deployed as part of AWS Service Catalog Terraform Community Engine in order to perform the below tasks:
+
+1. Terraform Community Engine receive messages from the queues and forwards the message to AWS Step Function.
+2. An AWS Step Function Workflow handles the request. The Terraform operations run in AWS CodeBuild.
+3. Terraform Engine sends provisioning results to the AWS Service Catalog service.
+
+## Architecture
+
+![SCE Core Architecture](/assets/TCE-Architecture.png)
+
+## Terraform Community Engine Workflow
+
+1. An AWS Step Function (State Machine) manages the Terraform Provisioning experience.
+2. AWS CodeBuild task triggers based on the update, provision or terminate operation.
+3. Terraform runner in the AWS CodeBuild performs the terraform apply action to provision or update the AWS resources.
+4. Terraform runner in the AWS CodeBuild also performs the terraform destroy action to destroy the AWS resources.
+5. Depending on the terraform runner results, the AWS Service Catalog product gets notified.
+6. AWS CodeBuild tasks success or failure results also get notified to the developers using the Amazon Simple Notification Service (SNS).
+7. AWS CodeBuild runs Terraform Apply to provision or update the AWS Service Catalog products. It also notifies the AWS Service Catalog in case of a failed response from the terraform runner.
+8. AWS CodeBuild runs Terraform Destroy to terminate the AWS Service Catalog product. It also notifies the AWS Service Catalog in case of a succeeded or failed response from the terraform runner.
+9. For any Succeeded results from terraform runner in AWS CodeBuild, AWS Step Function will run the process of parsing the success results and notifying the AWS Service Catalog using AWS Lambda Functions.
+10. AWS Lambda Function fetches the state file from S3 state bucket and parses outputs from the state file to record outputs.
+11. After getting the output, another AWS Lambda Function sends back the success notification and output results of Terraform provision or update to AWS Service Catalog.
+
 <!-- BEGIN_TF_DOCS -->
 # Terraform Service Catalog Engine - Terraform Community Edition
 
@@ -16,16 +44,16 @@ This modules deploys the core components needed to support Terraform Community E
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | >=2.4.0 |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0.0 |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.4.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.43.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_build"></a> [build](#module\_build) | ./modules/dependency-builder | n/a |
-| <a name="module_core"></a> [core](#module\_core) | git@github.com:aws-ia/terraform-aws-sce-core.git | main |
-| <a name="module_label"></a> [label](#module\_label) | git::https://github.com/aws-ia/terraform-aws-label.git | 9595b11 |
+| <a name="module_core"></a> [core](#module\_core) | /Users/albsilv/Desktop/SCE/terraform-aws-sce-core | n/a |
+| <a name="module_label"></a> [label](#module\_label) | git::https://github.com/aws-ia/terraform-aws-label.git | 9595b11aadf520f5ee3c210848802c414441236f |
 
 ## Resources
 
@@ -66,9 +94,12 @@ This modules deploys the core components needed to support Terraform Community E
 | [aws_s3_bucket.sce_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket.sce_terraform_state](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
 | [aws_s3_bucket_lifecycle_configuration.sce_access_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
+| [aws_s3_bucket_lifecycle_configuration.sce_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) | resource |
 | [aws_s3_bucket_logging.sce_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
 | [aws_s3_bucket_logging.sce_terraform_state](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) | resource |
 | [aws_s3_bucket_policy.sce_access_logs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_policy.sce_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
+| [aws_s3_bucket_policy.sce_terraform_state](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.sce_logging](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_public_access_block.sce_logging_bucket](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 | [aws_s3_bucket_public_access_block.sce_terraform_state](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
@@ -82,6 +113,7 @@ This modules deploys the core components needed to support Terraform Community E
 | [aws_s3_object.terraform_runner](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_object) | resource |
 | [aws_sfn_state_machine.sce_manage_provisioned_product](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sfn_state_machine) | resource |
 | [aws_sns_topic.sns_codebuild_result_notify_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic) | resource |
+| [aws_sns_topic_policy.sns_codebuild_result_notify_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_policy) | resource |
 | [aws_sns_topic_subscription.sns_codebuild_result_notify_topic](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription) | resource |
 | [aws_ssm_parameter.ssh_key](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/ssm_parameter) | resource |
 | [archive_file.sce_get_state_file_outputs](https://registry.terraform.io/providers/hashicorp/archive/latest/docs/data-sources/file) | data source |
@@ -104,8 +136,9 @@ This modules deploys the core components needed to support Terraform Community E
 | <a name="input_cloudwatch_log_group_retention"></a> [cloudwatch\_log\_group\_retention](#input\_cloudwatch\_log\_group\_retention) | Amount of days to keep CloudWatch Log Groups for Lambda functions. 0 = Never Expire | `string` | `"0"` | no |
 | <a name="input_create_ssh_key_ssm_parameter"></a> [create\_ssh\_key\_ssm\_parameter](#input\_create\_ssh\_key\_ssm\_parameter) | Boolean flag indicating whether an SSM parameter will be created for an SSH key. If created, it will be defaulted to a value of REPLACE\_ME and will need to be updated outside of this module. | `bool` | `false` | no |
 | <a name="input_label_id_order"></a> [label\_id\_order](#input\_label\_id\_order) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `list(string)` | <pre>[<br>  "name",<br>  "namespace",<br>  "stage"<br>]</pre> | no |
-| <a name="input_s3_access_logging_expiration_days"></a> [s3\_access\_logging\_expiration\_days](#input\_s3\_access\_logging\_expiration\_days) | The amount of days to retain logs in the S3 logs bucket | `string` | `"365"` | no |
+| <a name="input_s3_access_logging_expiration_days"></a> [s3\_access\_logging\_expiration\_days](#input\_s3\_access\_logging\_expiration\_days) | The amount of days to retain access logs in the S3 logs bucket | `string` | `"365"` | no |
 | <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Set to true if you want to force delete S3 bucket created by this module (including contents of the bucket) | `bool` | `false` | no |
+| <a name="input_s3_logs_expiration_days"></a> [s3\_logs\_expiration\_days](#input\_s3\_logs\_expiration\_days) | The amount of days to retain solution-related logs in the S3 logs bucket | `string` | `"365"` | no |
 | <a name="input_sfn_log_level"></a> [sfn\_log\_level](#input\_sfn\_log\_level) | Defines which category of execution history events are logged. Valid values: ALL, ERROR, FATAL, OFF | `string` | `"ALL"` | no |
 | <a name="input_sns_topic_email_addresses"></a> [sns\_topic\_email\_addresses](#input\_sns\_topic\_email\_addresses) | The email address to notify about the AWS CodeBuild success or failure | `list(string)` | `[]` | no |
 | <a name="input_ssh_key_ssm_parameter_path"></a> [ssh\_key\_ssm\_parameter\_path](#input\_ssh\_key\_ssm\_parameter\_path) | The SSM parameter path containing a private SSH key for cloning modules from private Git repositories. | `string` | `"/sce/tf/ssh-key"` | no |
@@ -120,6 +153,6 @@ This modules deploys the core components needed to support Terraform Community E
 
 | Name | Description |
 |------|-------------|
-| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | Parameter parser Lambda function IAM role ARN. You need to allow this role to assume the portfolio launch role |
-| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | CodeBuild IAM role ARN. You need to allow this role to assume the portfolio launch role |
+| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | n/a |
+| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | n/a |
 <!-- END_TF_DOCS -->

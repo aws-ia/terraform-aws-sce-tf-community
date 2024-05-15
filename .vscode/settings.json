@@ -1,0 +1,17 @@
+{
+    "python.testing.pytestArgs": [
+        "lambda"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}/src/python",
+    },
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}/src/python",
+    },
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}/src/python",
+    },
+    "python.envFile": "${workspaceFolder}/.env"
+}

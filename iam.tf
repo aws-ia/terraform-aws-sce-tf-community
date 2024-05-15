@@ -38,7 +38,7 @@ resource "aws_iam_policy" "aws_lambda_xray_write_only_access" {
 # sce_runner
 
 resource "aws_iam_role" "sce_codebuild_runner" {
-  name = substr("${local.codebuild.sce_runner.role_name_prefix}-codebuild-runner", 0, 63)
+  name = substr("${module.label.id}-codebuild-runner", 0, 63)
   assume_role_policy = templatefile("${path.module}/iam/trust-policies/trust.json.tftpl", {
     service_principals = "\"codebuild.amazonaws.com\""
   })

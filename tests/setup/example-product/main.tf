@@ -238,13 +238,13 @@ data "aws_iam_policy_document" "example_product_launch_constraint_policy" {
 # SHARE PORTFOLIO TO PIPELINE FOR TEST
 
 resource "aws_servicecatalog_principal_portfolio_association" "abp_role" {
-  for_each     = local.unique_portfolio_ids
-  portfolio_id = each.value 
+  for_each      = local.unique_portfolio_ids
+  portfolio_id  = each.value
   principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ABPIntegrationRole"
 }
 
 resource "aws_servicecatalog_principal_portfolio_association" "abp_user" {
-  for_each     = local.unique_portfolio_ids
-  portfolio_id = each.value 
+  for_each      = local.unique_portfolio_ids
+  portfolio_id  = each.value
   principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/abp"
 }

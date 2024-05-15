@@ -14,6 +14,7 @@
     },
     "Choice State": {
       "Type": "Choice",
+      "Comment": "Looks up if the operation is provision, update or terminate",
       "Choices": [
         {
           "And": [
@@ -59,6 +60,7 @@
     },
     "Terminate": {
       "Type": "Task",
+      "Comment": "Terminate the product and send success or failure results of Terraform destroy to Service Catalog",
       "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
       "Parameters": {
         "ProjectName": "${aws_codebuild_project_sce_runner_name}",
@@ -124,6 +126,7 @@
     },
     "Provision": {
       "Type": "Task",
+      "Comment": "Provision the service catalog product and in case of failure, send failure results of Terraform apply to Service Catalog",
       "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
       "Parameters": {
         "ProjectName": "${aws_codebuild_project_sce_runner_name}",
@@ -219,6 +222,7 @@
     },
     "Update": {
       "Type": "Task",
+      "Comment": "Update the service catalog product and in case of failure, send failure results of Terraform apply to Service Catalog",     
       "Resource": "arn:${data_aws_partition_current_partition}:states:::codebuild:startBuild.sync",
       "Parameters": {
         "ProjectName": "${aws_codebuild_project_sce_runner_name}",
@@ -314,6 +318,7 @@
     },  
     "Build passed?": {
       "Type": "Choice",
+      "Comment": "Notify if the codebuild task failed otherwise check if the operation is provision, update or terminate",
       "Choices": [
         {
           "Variable": "$.taskresult.Build.BuildStatus",
@@ -325,6 +330,7 @@
     },
     "service catalog operation?": {
       "Type": "Choice",
+      "Comment": "Looks up if the operation is provision, update or terminate",
       "Choices": [
         {
           "And": [
@@ -370,6 +376,7 @@
     },
     "Notify codebuild task success and Get state file outputs": {
       "Type": "Parallel",
+      "Comment": "Parallel state to notify codebuild task success and get state file outputs",
       "Branches": [
         {
           "StartAt": "Notify codebuild task success",
@@ -468,7 +475,7 @@
     },
     "Notify provision update engine workflow success result": {
       "Type": "Task",
-      "Comment": "Sends back success results of Terraform updating to Service Catalog",
+      "Comment": "Sends back success results of Terraform provision or updating to Service Catalog",
       "Resource": "arn:${data_aws_partition_current_partition}:states:::lambda:invoke",
       "Parameters": {
         "FunctionName": "${aws_lambda_function_sce_notify_provision_update_result_arn}",
@@ -544,6 +551,7 @@
     },
     "Notify terminate success result": {
       "Type": "Task",
+      "Comment": "Notify service catalog product termination success results",
       "Resource": "arn:${data_aws_partition_current_partition}:states:::sns:publish",
       "Parameters": {
         "Message": "CodeBuild job to terminate provisioned product and the notification to service catalog succeeded",
@@ -553,6 +561,7 @@
     },
     "Notify codebuild task failure": {
       "Type": "Task",
+      "Comment": "Email notification of codebuild failed tasks",
       "Resource": "arn:${data_aws_partition_current_partition}:states:::sns:publish",
       "Parameters": {
         "Message": "CodeBuild build job failed",

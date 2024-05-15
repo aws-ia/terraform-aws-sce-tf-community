@@ -4,7 +4,7 @@
 # Out of the box deployment (no VPC, notifications, etc.)
 module "sce_tf" {
   source = "../.."
-  
+
   s3_force_destroy = var.s3_force_destroy
 }
 

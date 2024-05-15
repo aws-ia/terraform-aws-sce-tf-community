@@ -15,7 +15,6 @@ resource "aws_lambda_layer_version" "sce_terraform_community_layer" {
 ############################################################################################################
 
 resource "aws_lambda_function" "sce_provisioning_handler" {
-  # tflint-ignore: aws_lambda_function_invalid_runtime
   #checkov:skip=CKV_AWS_115:Concurrent execution limit not required
   #checkov:skip=CKV_AWS_272:Code signing not required
   #checkov:skip=CKV_AWS_116:DLQ is not required
