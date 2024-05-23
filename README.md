@@ -52,7 +52,7 @@ This modules deploys the core components needed to support Terraform Community E
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_build"></a> [build](#module\_build) | ./modules/dependency-builder | n/a |
-| <a name="module_core"></a> [core](#module\_core) | /Users/albsilv/Desktop/SCE/terraform-aws-sce-core | n/a |
+| <a name="module_core"></a> [core](#module\_core) | git@github.com:aws-ia/terraform-aws-sce-core.git | main |
 | <a name="module_label"></a> [label](#module\_label) | git::https://github.com/aws-ia/terraform-aws-label.git | 9595b11aadf520f5ee3c210848802c414441236f |
 
 ## Resources
@@ -153,6 +153,6 @@ This modules deploys the core components needed to support Terraform Community E
 
 | Name | Description |
 |------|-------------|
-| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | n/a |
-| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | n/a |
+| <a name="output_sce_parameter_parser_role_arn"></a> [sce\_parameter\_parser\_role\_arn](#output\_sce\_parameter\_parser\_role\_arn) | Parameter parser Lambda function IAM role ARN. You need to allow this role to assume the portfolio launch role |
+| <a name="output_terraform_execution_role"></a> [terraform\_execution\_role](#output\_terraform\_execution\_role) | CodeBuild IAM role ARN. You need to allow this role to assume the portfolio launch role |
 <!-- END_TF_DOCS -->
