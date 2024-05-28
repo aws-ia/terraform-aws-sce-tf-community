@@ -31,9 +31,8 @@ locals {
 
   kms = {
     tfc = {
-      alias               = "alias/tfc"
-      description         = "KMS key for Service Catalog Engine TFC"
-      enable_key_rotation = true
+      alias       = "alias/tfc"
+      description = "KMS key for Service Catalog Engine TFC"
     }
   }
   lambda = {
@@ -46,7 +45,7 @@ locals {
       memory_size         = 256
       runtime             = "python3.12"
       timeout             = "30"
-      tracing_config_mode = "PassThrough"
+      tracing_config_mode = "Active"
     }
     sce_get_state_file_outputs = {
       architectures       = ["arm64"]
@@ -56,7 +55,7 @@ locals {
       memory_size         = 256
       runtime             = "python3.12"
       timeout             = "30"
-      tracing_config_mode = "PassThrough"
+      tracing_config_mode = "Active"
     }
     sce_notify_provision_update_result = {
       architectures       = ["arm64"]
@@ -66,7 +65,7 @@ locals {
       memory_size         = 256
       runtime             = "python3.12"
       timeout             = "30"
-      tracing_config_mode = "PassThrough"
+      tracing_config_mode = "Active"
     }
   }
 

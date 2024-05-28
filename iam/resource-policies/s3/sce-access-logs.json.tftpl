@@ -11,13 +11,28 @@
             },
             "Action": "s3:PutObject",
             "Resource": [
-                "${aws_s3_bucket_sce_logging_bucket_arn}/*"
+                "${aws_s3_bucket_sce_access_logs_arn}/*"
             ],
             "Condition": {
                 "StringEquals": {
                     "aws:SourceAccount": "${data_aws_caller_identity_current_account_id}"
                 }
             }
+        },
+        {
+        "Sid": "AllowSSLRequestsOnly",
+        "Action": "s3:*",
+        "Effect": "Deny",
+        "Resource": [
+            "${aws_s3_bucket_sce_access_logs_arn}",
+            "${aws_s3_bucket_sce_access_logs_arn}/*"
+        ],
+        "Condition": {
+            "Bool": {
+                "aws:SecureTransport": "false"
+            }
+        },
+        "Principal": "*"
         }
     ]
 }

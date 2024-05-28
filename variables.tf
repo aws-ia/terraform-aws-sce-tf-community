@@ -54,7 +54,13 @@ variable "cloudwatch_log_group_retention" {
 #########################################
 
 variable "s3_access_logging_expiration_days" {
-  description = "The amount of days to retain logs in the S3 logs bucket"
+  description = "The amount of days to retain access logs in the S3 logs bucket"
+  type        = string
+  default     = "365"
+}
+
+variable "s3_logs_expiration_days" {
+  description = "The amount of days to retain solution-related logs in the S3 logs bucket"
   type        = string
   default     = "365"
 }

@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 resource "aws_kms_key" "tfc" {
-  description         = local.kms.tfc.description
-  enable_key_rotation = local.kms.tfc.enable_key_rotation
+  #checkov:skip=CKV_AWS_7:KMS Key rotation is optional, if dictated by customer policies
+
+  description = local.kms.tfc.description
   policy = templatefile("${path.module}/iam/resource-policies/kms/tfc.json.tftpl", {
     data_aws_caller_identity_current_account_id = data.aws_caller_identity.current.account_id
     data_aws_region_current_name                = data.aws_region.current.name

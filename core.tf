@@ -4,6 +4,7 @@
 module "core" {
   source = "git::https://github.com/aws-ia/terraform-aws-sce-core.git?ref=481e8d1a40f2a6b62710bd95f69884e0c0082d41" # v0.0.1 tflint-ignore: terraform_module_pinned_source
 
+
   cloudwatch_log_group_retention = var.cloudwatch_log_group_retention
 
   label_id_order = var.label_id_order

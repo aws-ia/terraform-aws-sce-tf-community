@@ -11,7 +11,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_sce_tf"></a> [sce\_tf](#module\_sce\_tf) | git::ssh://git@ssh.gitlab.aws.dev/albsilv/terraform-aws-sce-tf-community.git | develop |
+| <a name="module_sce_tf"></a> [sce\_tf](#module\_sce\_tf) | ../.. | n/a |
 
 ## Resources
 
