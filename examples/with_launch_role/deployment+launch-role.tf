@@ -7,7 +7,7 @@ data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 
 module "sce_tf" {
-  source = "git::ssh://git@ssh.gitlab.aws.dev/albsilv/terraform-aws-sce-tf-community.git?ref=develop"
+  source = "../.."
 }
 
 resource "aws_iam_role" "sce_launch_role" {

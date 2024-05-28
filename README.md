@@ -24,7 +24,7 @@ This modules deploys the core components needed to support Terraform Community E
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_build"></a> [build](#module\_build) | ./modules/dependency-builder | n/a |
-| <a name="module_core"></a> [core](#module\_core) | git@github.com:aws-ia/terraform-aws-sce-core.git | main |
+| <a name="module_core"></a> [core](#module\_core) | git::https://github.com/aws-ia/terraform-aws-sce-core.git | 481e8d1a40f2a6b62710bd95f69884e0c0082d41 |
 | <a name="module_label"></a> [label](#module\_label) | git::https://github.com/aws-ia/terraform-aws-label.git | 9595b11 |
 
 ## Resources

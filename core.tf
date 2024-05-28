@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 module "core" {
-  source = "git@github.com:aws-ia/terraform-aws-sce-core.git?ref=main" # tflint-ignore: terraform_module_pinned_source
+  source = "git::https://github.com/aws-ia/terraform-aws-sce-core.git?ref=481e8d1a40f2a6b62710bd95f69884e0c0082d41" # v0.0.1 tflint-ignore: terraform_module_pinned_source
 
   cloudwatch_log_group_retention = var.cloudwatch_log_group_retention
 
