@@ -1,4 +1,5 @@
-# Terraform Service Catalog Engine - Terraform Community
+<!-- BEGIN_TF_DOCS -->
+# Terraform Service Catalog Engine - Terraform Community Edition
 
 The AWS Service Catalog Terraform Community Engine (TCE) provides an example for you to configure and install a Terraform engine in your AWS Service Catalog administrator account. The TCE deploys the core components needed to support Terraform Community Edition as an `EXTERNAL` AWS Service Catalog provisioning engine. With the engine installed into your account, you can use AWS Service Catalog as a single tool to organize, govern, and distribute your Terraform configurations within AWS. For more information about Terraform and AWS Service Catalog, see [Getting started with Terraform.](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/getstarted-Terraform.html)
 
@@ -26,11 +27,6 @@ AWS Service Catalog Engine Core will need to be deployed as part of AWS Service 
 10. AWS Lambda Function fetches the state file from S3 state bucket and parses outputs from the state file to record outputs.
 11. After getting the output, another AWS Lambda Function sends back the success notification and output results of Terraform provision or update to AWS Service Catalog.
 
-<!-- BEGIN_TF_DOCS -->
-# Terraform Service Catalog Engine - Terraform Community Edition
-
-This modules deploys the core components needed to support Terraform Community Edition as an `EXTERNAL` AWS Service Catalog provisioning engine.
-
 ## Requirements
 
 | Name | Version |
@@ -44,8 +40,8 @@ This modules deploys the core components needed to support Terraform Community E
 
 | Name | Version |
 |------|---------|
-| <a name="provider_archive"></a> [archive](#provider\_archive) | 2.4.2 |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.43.0 |
+| <a name="provider_archive"></a> [archive](#provider\_archive) | >=2.4.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.0.0 |
 
 ## Modules
 

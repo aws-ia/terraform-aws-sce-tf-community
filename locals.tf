@@ -21,6 +21,7 @@ locals {
       s3_logs_status              = "ENABLED"
       source_type                 = "NO_SOURCE"
       type                        = "ARM_CONTAINER"
+      role_name_prefix            = "TerraformExecutionRole"
     }
   }
 
