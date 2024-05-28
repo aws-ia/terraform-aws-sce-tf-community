@@ -5,5 +5,5 @@
 module "sce_tf" {
   source = "../.."
 
-  sns_topic_email_addresses = ["john_doe@example.com"]
+  sns_topic_email_addresses = ["myname@example.com"]
 }
