@@ -1,0 +1,41 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "__default_statement_ID",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "*"
+        },
+        "Action": [
+          "SNS:GetTopicAttributes",
+          "SNS:SetTopicAttributes",
+          "SNS:AddPermission",
+          "SNS:RemovePermission",
+          "SNS:DeleteTopic",
+          "SNS:Subscribe",
+          "SNS:ListSubscriptionsByTopic",
+          "SNS:Publish",
+          "SNS:Receive"
+        ],
+        "Resource": "${aws_sns_topic_sns_codebuild_result_notify_topic_arn}",
+        "Condition": {
+          "StringEquals": {
+            "AWS:SourceOwner": "${data_aws_caller_identity_current_account_id}"
+          }
+        }
+      },
+      {
+        "Sid": "AllowPublishThroughSSLOnly",
+        "Action": "SNS:Publish",
+        "Effect": "Deny",
+        "Resource": "*",
+        "Condition": {
+          "Bool": {
+            "aws:SecureTransport": "false"
+          }
+        },
+        "Principal": "*"
+      }
+    ]
+  }

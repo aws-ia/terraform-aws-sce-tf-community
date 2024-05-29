@@ -1,0 +1,33 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:${data_aws_partition_current_id}:iam::${data_aws_caller_identity_current_account_id}:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "logs.${data_aws_region_current_name}.amazonaws.com"
+            },
+            "Action": [
+                "kms:Encrypt*",
+                "kms:Decrypt*",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*",
+                "kms:Describe*"
+            ],
+            "Resource": "*",
+            "Condition": {
+                "ArnLike": {
+                    "kms:EncryptionContext:aws:logs:arn": "arn:${data_aws_partition_current_id}:logs:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:*"
+                }
+            }
+        }
+    ]
+}

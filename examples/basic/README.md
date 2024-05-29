@@ -1,11 +1,11 @@
 <!-- BEGIN_TF_DOCS -->
+# Basic setup
+
+Out of the box deployment (no VPC, notifications, etc.)
+
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.14.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.72.0 |
-| <a name="requirement_awscc"></a> [awscc](#requirement\_awscc) | >= 0.11.0 |
+No requirements.
 
 ## Providers
 
@@ -13,7 +13,9 @@ No providers.
 
 ## Modules
 
-No modules.
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_sce_tf"></a> [sce\_tf](#module\_sce\_tf) | ../.. | n/a |
 
 ## Resources
 
@@ -21,7 +23,9 @@ No resources.
 
 ## Inputs
 
-No inputs.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | Set to true if you want to force delete S3 bucket created by this module (including contents of the bucket) | `bool` | `false` | no |
 
 ## Outputs
 

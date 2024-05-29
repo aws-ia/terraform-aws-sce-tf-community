@@ -1,0 +1,42 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: ${python_version}
+      golang: ${golang_version}
+
+    commands:
+      - DEFAULT_PATH=$(pwd)
+      - GOLANG_BUILD_PATH=$DEFAULT_PATH/sce-parameter-parser
+      - PYTHON_BUILD_PATH=$DEFAULT_PATH/terraform-runner
+
+      - mkdir $GOLANG_BUILD_PATH && cd $GOLANG_BUILD_PATH
+      - aws s3 cp s3://${s3_terraform_state_bucket_name}/build/src/terraform-parameter-parser.zip .
+
+      - mkdir $PYTHON_BUILD_PATH && cd $PYTHON_BUILD_PATH
+      - aws s3 cp s3://${s3_terraform_state_bucket_name}/build/src/terraform-runner.zip .
+
+  build:
+    commands:
+      - cd $GOLANG_BUILD_PATH
+      - unzip terraform-parameter-parser.zip && rm terraform-parameter-parser.zip
+      - go env -w GOPROXY=direct
+      - rm -f go.mod
+      - go mod init terraform_parameter_parser
+      - go mod tidy
+      - GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-trimpath go build -mod=readonly -ldflags='-s -w' -o ./bootstrap
+      - ls -lah
+      - zip -r terraform-parameter-parser.zip bootstrap
+      - aws s3 cp terraform-parameter-parser.zip s3://${s3_terraform_state_bucket_name}/build/terraform-parameter-parser.zip
+
+      - cd $PYTHON_BUILD_PATH
+      - unzip terraform-runner.zip && rm terraform-runner.zip
+      - python3 -m venv .venv
+      - source .venv/bin/activate
+      - pip3 install build
+      - python3 -m build
+      - aws s3 cp ./dist/terraform_runner-${terraform_runner_version}-py3-none-any.whl s3://${s3_terraform_state_bucket_name}/build/terraform_runner-${terraform_runner_version}-py3-none-any.whl

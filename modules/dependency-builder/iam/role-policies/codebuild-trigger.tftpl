@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+          "codebuild:BatchGetBuilds",
+          "codebuild:StartBuild"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:${data_aws_partition_current_partition}:codebuild:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:project/${aws_codebuild_project_this_name}"
+    },
+    {
+      "Action": [
+          "logs:CreateLogGroup",
+          "logs:PutLogEvents"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:${data_aws_partition_current_partition}:logs:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:log-group:/aws/lambda/${aws_lambda_function_codebuild_trigger_function_name}:*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "kms:Decrypt",
+            "kms:GenerateDataKey"
+        ],
+        "Resource": "${kms_key_arn}"
+    }
+  ]
+}

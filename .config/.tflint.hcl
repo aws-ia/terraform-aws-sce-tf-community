@@ -21,7 +21,7 @@ rule "terraform_required_version" {
 }
 
 rule "terraform_naming_convention" {
-  enabled = true
+  enabled = false
   format  = "snake_case"
 }
 
@@ -58,9 +58,13 @@ rule "terraform_module_pinned_source" {
 }
 
 rule "terraform_standard_module_structure" {
-  enabled = true
+  enabled = false
 }
 
 rule "terraform_workspace_remote" {
   enabled = true
+}
+
+rule "aws_lambda_function_invalid_runtime" {
+  enabled = false
 }

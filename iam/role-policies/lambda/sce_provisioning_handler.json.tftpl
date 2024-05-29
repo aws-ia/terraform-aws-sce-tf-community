@@ -1,0 +1,36 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "kms:DescribeKey",
+                "kms:Decrypt",
+                "kms:ReEncrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": [
+                "${aws_kms_alias_sce_target_key_arn}"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+            ],
+            "Resource": [
+                "${aws_sqs_queue_sce_provision_queue_arn}",
+                "${aws_sqs_queue_sce_termination_queue_arn}",
+                "${aws_sqs_queue_sce_update_queue_arn}"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "states:StartExecution"
+            ],
+            "Resource": "${aws_sfn_state_machine_sce_manage_provisioned_product_arn}",
+            "Effect": "Allow"
+        }
+    ]
+}

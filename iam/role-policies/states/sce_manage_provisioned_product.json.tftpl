@@ -1,0 +1,70 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutLogEvents",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "codebuild:StartBuild",
+                "codebuild:StopBuild",
+                "codebuild:BatchGetBuilds"
+            ],
+            "Resource": [
+                "${aws_codebuild_project_sce_runner_arn}"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "events:PutTargets",
+                "events:PutRule",
+                "events:DescribeRule"
+            ],
+            "Resource": [
+                "arn:${data_aws_partition_current_partition}:events:${data_aws_region_current_name}:${data_aws_caller_identity_current_account_id}:rule/StepFunctionsGetEventForCodeBuildStartBuildRule"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction"
+            ],
+            "Resource": [
+                "${aws_lambda_function_sce_get_state_file_outputs_arn}",
+                "${aws_lambda_function_sce_notify_provision_update_result_arn}"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sns:Publish"
+            ],
+            "Resource": [
+                "${aws_sns_topic_codebuild_result_notify_arn}"
+            ]
+        },
+        {
+        "Effect": "Allow",
+        "Action": [
+            "kms:DescribeKey",
+            "kms:Decrypt",
+            "kms:GenerateDataKey"
+        ],
+        "Resource": "${aws_kms_alias_sce_target_key_arn}"
+        }
+    ]
+}

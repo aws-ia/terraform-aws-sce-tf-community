@@ -1,0 +1,71 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_S3_BUCKET_SCE_TERRAFORM_STATE_ID: ${aws_s3_bucket_sce_terraform_state_id}
+
+phases:
+  install:
+    commands:
+      - yum -y install yum-utils
+      - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform-${terraform_version}
+      - aws s3 cp s3://${aws_s3_bucket_sce_terraform_state_id}/build/terraform_runner-${terraform_runner_version}-py3-none-any.whl /tmp/terraform_runner-${terraform_runner_version}-py3-none-any.whl
+      - pip3 install /tmp/terraform_runner-${terraform_runner_version}-py3-none-any.whl
+      # Configure SSH Key for private modules
+      - |
+        ssh_key_parameter=$(aws ssm get-parameter --name ${ssh_key_ssm_parameter_path} --with-decryption 2> /dev/null || echo "None")
+        if [[ $ssh_key_parameter != "None" ]]; then
+          ssh_key=$(jq --raw-output ".Parameter.Value" <<< $ssh_key_parameter)
+          mkdir -p ~/.ssh
+          echo "Host *" >> ~/.ssh/config
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          echo "UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+          echo "$ssh_key" > ~/.ssh/ssh_key
+          echo -e "\n\n" >>  ~/.ssh/ssh_key
+          chmod 600 ~/.ssh/ssh_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/ssh_key
+        fi
+  build:
+    commands:
+      - |
+        if [ $SCE_OPERATION == "PROVISION_PRODUCT" ]
+        then
+          RESPONSE=$(python3 -m terraform_runner --action=apply --provisioned-product-descriptor=$SCE_AWS_ACCOUNT_ID/$SCE_PROVISIONED_PRODUCT_ID --launch-role=$SCE_LAUNCH_ROLE_ARN --artifact-path=$SCE_ARTIFACT_PATH --region=$AWS_REGION --terraform-state-bucket=$AWS_S3_BUCKET_SCE_TERRAFORM_STATE_ID --artifact-parameters=$SCE_PARAMETERS --tags=$SCE_TAGS)
+          echo $RESPONSE
+          if [[ $RESPONSE = *'ERROR'* ]]
+          then
+            STATUS="FAILED"
+            echo $STATUS
+            aws servicecatalog notify-provision-product-engine-workflow-result --workflow-token $SCE_WORKFLOW_TOKEN --record-id $SCE_RECORD_ID --status $STATUS --failure-reason "$${RESPONSE:1:2048}"
+            exit 1
+          fi
+        elif [ $SCE_OPERATION == "UPDATE_PROVISIONED_PRODUCT" ]
+        then
+          RESPONSE=$(python3 -m terraform_runner --action=apply --provisioned-product-descriptor=$SCE_AWS_ACCOUNT_ID/$SCE_PROVISIONED_PRODUCT_ID --launch-role=$SCE_LAUNCH_ROLE_ARN --artifact-path=$SCE_ARTIFACT_PATH --region=$AWS_REGION --terraform-state-bucket=$AWS_S3_BUCKET_SCE_TERRAFORM_STATE_ID --artifact-parameters=$SCE_PARAMETERS --tags=$SCE_TAGS)
+          echo $RESPONSE
+          if [[ $RESPONSE = *'ERROR'* ]]
+          then
+            STATUS="FAILED"
+            echo $STATUS
+            aws servicecatalog notify-terminate-provisioned-product-engine-workflow-result --workflow-token $SCE_WORKFLOW_TOKEN --record-id $SCE_RECORD_ID --status $STATUS --failure-reason "$${RESPONSE:1:2048}"
+            exit 1
+          fi            
+        elif [ $SCE_OPERATION == "TERMINATE_PROVISIONED_PRODUCT" ]
+        then
+          RESPONSE=$(python3 -m terraform_runner --action=destroy --provisioned-product-descriptor=$SCE_AWS_ACCOUNT_ID/$SCE_PROVISIONED_PRODUCT_ID --launch-role=$SCE_LAUNCH_ROLE_ARN --artifact-path=$SCE_ARTIFACT_PATH --region=$AWS_REGION --terraform-state-bucket=$AWS_S3_BUCKET_SCE_TERRAFORM_STATE_ID)
+          echo $RESPONSE
+          if [[ $RESPONSE = *'ERROR'* ]]
+          then
+            STATUS="FAILED"
+            echo $STATUS
+            aws servicecatalog notify-terminate-provisioned-product-engine-workflow-result --workflow-token $SCE_WORKFLOW_TOKEN --record-id $SCE_RECORD_ID --status $STATUS --failure-reason "$${RESPONSE:1:2048}"
+            exit 1
+          else
+            STATUS="SUCCEEDED"
+            echo $STATUS
+            aws servicecatalog notify-terminate-provisioned-product-engine-workflow-result --workflow-token $SCE_WORKFLOW_TOKEN --record-id $SCE_RECORD_ID --status $STATUS
+            exit 0
+          fi
+        fi
