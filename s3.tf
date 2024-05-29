@@ -166,7 +166,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sce_access_logs" 
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = local.s3.sce_access_logs.sse_algorithm
+      sse_algorithm = local.s3.sce_access_logs.sse_algorithm #tfsec:ignore:aws-s3-encryption-customer-key : SSE-KMS not supported for access log
     }
   }
 }
