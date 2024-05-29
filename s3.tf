@@ -29,7 +29,6 @@ resource "aws_s3_bucket_versioning" "sce_terraform_state" {
   }
 }
 
-#tfsec:ignore:aws-s3-encryption-customer-key : false-alarm
 resource "aws_s3_bucket_server_side_encryption_configuration" "sce_terraform_state" {
 
   bucket = aws_s3_bucket.sce_terraform_state.id
@@ -37,7 +36,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "sce_terraform_sta
   rule {
     apply_server_side_encryption_by_default {
       kms_master_key_id = aws_kms_alias.tfc.target_key_arn
-      sse_algorithm     = local.s3.sce_terraform_state.sse_algorithm
+      sse_algorithm     = local.s3.sce_terraform_state.sse_algorithm #tfsec:ignore:aws-s3-encryption-customer-key : false-alarm
     }
   }
 }
@@ -140,6 +139,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "sce_logging" {
 # sce_access_logs
 ############################################################################################################
 
+#tfsec:ignore:aws-s3-enable-bucket-logging : skip logging on access log bucket
 resource "aws_s3_bucket" "sce_access_logs" {
   bucket        = local.s3.sce_access_logs.bucket
   force_destroy = var.s3_force_destroy
