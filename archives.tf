@@ -52,7 +52,7 @@ data "archive_file" "terraform_parameter_parser" {
 }
 
 resource "aws_s3_object" "terraform_parameter_parser" {
-  key        = "/build/src/terraform-parameter-parser.zip"
+  key        = "${local.archive_path}/terraform-parameter-parser.zip"
   bucket     = aws_s3_bucket.sce_terraform_state.id
   source     = data.archive_file.terraform_parameter_parser.output_path
   kms_key_id = aws_kms_alias.tfc.target_key_arn
@@ -69,7 +69,7 @@ data "archive_file" "terraform_runner" {
 }
 
 resource "aws_s3_object" "terraform_runner" {
-  key        = "/build/src/terraform-runner.zip"
+  key        = "${local.archive_path}/terraform-runner.zip"
   bucket     = aws_s3_bucket.sce_terraform_state.id
   source     = data.archive_file.terraform_runner.output_path
   kms_key_id = aws_kms_alias.tfc.target_key_arn

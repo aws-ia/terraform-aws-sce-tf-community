@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 locals {
-  archive_path = "${path.module}/build-artifacts/"
+  archive_path = "${path.module}/build/src"
 
   cloudwatch = {
     codebuild_log_group_prefix = "/aws/codebuild"
