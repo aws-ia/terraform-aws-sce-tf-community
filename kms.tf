@@ -1,6 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+#tfsec:ignore:aws-kms-auto-rotate-keys : KMS Key rotation is optional, if dictated by customer policies
 resource "aws_kms_key" "tfc" {
   #checkov:skip=CKV_AWS_7:KMS Key rotation is optional, if dictated by customer policies
 

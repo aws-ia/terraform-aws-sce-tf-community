@@ -5,6 +5,7 @@
 # sce_terraform_state
 ############################################################################################################
 
+#tfsec:ignore:aws-s3-enable-bucket-logging : false alarm, bucket logging is enabled as separate resource
 resource "aws_s3_bucket" "sce_terraform_state" {
   #checkov:skip=CKV2_AWS_61:Lifecycle policies not implemented due to nature of contents
 
@@ -28,6 +29,7 @@ resource "aws_s3_bucket_versioning" "sce_terraform_state" {
   }
 }
 
+#tfsec:ignore:aws-s3-encryption-customer-key : false-alarm
 resource "aws_s3_bucket_server_side_encryption_configuration" "sce_terraform_state" {
 
   bucket = aws_s3_bucket.sce_terraform_state.id
