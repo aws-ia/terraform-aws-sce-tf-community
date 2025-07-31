@@ -49,7 +49,7 @@ EOF
 resource "aws_iam_role_policy" "sce_launch_role" {
   name   = "sce-launch-role"
   role   = aws_iam_role.sce_launch_role.id
-  policy = data.aws_iaws_iam_role_policy.sce_launch_role
+  policy = data.aws_iam_policy_document.sce_launch_role.json
 }
 
 data "aws_iam_policy_document" "sce_launch_role" {
